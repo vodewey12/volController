@@ -29,9 +29,12 @@ class volController(object):
                 )[sd.default.device[1]]['name']
                 print("hello")
                 '''
-            cc = str(ser.readline())
-            print(cc)
-            self.changeVolume(self.volume, float(cc[2:][:-5])/1023.0)
+            cc = str(ser.readline())[2:][:-5].split("|")
+            button = int(cc[0])
+            master_volume = float(cc[1])/1023.0
+            if button == 1:
+                self.refreshController()
+            self.changeVolume(self.volume, float(master_volume))
 
     def checkCurrentDevice(self):
         self.currentOutputDevice = sd.query_devices()[

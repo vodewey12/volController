@@ -12,25 +12,36 @@ class volController(object):
         self.serial_port = serial_port
         self.currentOutputDevice = ""
         self._stopped = False
+        self.sessions = AudioUtilities.GetAllSessions()
+        self.devices = AudioUtilities.GetSpeakers()
+        self.interface = self.devices.Activate(
+            IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+        self.volume = cast(self.interface, POINTER(IAudioEndpointVolume))
 
     def start(self):
         self.checkCurrentDevice()
         ser = serial.Serial(self.serial_port, 9600)
-        sessions = AudioUtilities.GetAllSessions()
-        devices = AudioUtilities.GetSpeakers()
-        interface = devices.Activate(
-            IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-        volume = cast(interface, POINTER(IAudioEndpointVolume))
         while not self._stopped:
+            '''print(sd.query_devices()[sd.default.device[1]]['name'])
             if sd.query_devices()[sd.default.device[1]]['name'] != self.currentOutputDevice:
+                self.refreshController()
                 self.currentOutputDevice = sd.query_devices(
                 )[sd.default.device[1]]['name']
+                print("hello")
+                '''
             cc = str(ser.readline())
-            self.changeVolume(volume, float(cc[2:][:-5])/1023.0)
+            print(cc)
+            self.changeVolume(self.volume, float(cc[2:][:-5])/1023.0)
 
     def checkCurrentDevice(self):
         self.currentOutputDevice = sd.query_devices()[
             sd.default.device[1]]['name']
+
+    def refreshController(self):
+        newDevices = AudioUtilities.GetSpeakers()
+        newInterface = newDevices.Activate(
+            IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+        self.volume = cast(newInterface, POINTER(IAudioEndpointVolume))
 
     def changeVolume(self, volume, decibles):
         volume.SetMasterVolumeLevelScalar(decibles, None)

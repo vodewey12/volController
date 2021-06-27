@@ -10,7 +10,7 @@ class volController(object):
 
     def __init__(self, serial_port):
         self.serial_port = serial_port
-        self.currentDevice = ""
+        self.currentOutputDevice = ""
         self._stopped = False
 
     def start(self):
@@ -22,14 +22,15 @@ class volController(object):
             IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
         volume = cast(interface, POINTER(IAudioEndpointVolume))
         while not self._stopped:
-            if sd.query_devices()[sd.default.device[1]]['name'] != self.currentDevice:
-                self.currentDevice = sd.query_devices(
+            if sd.query_devices()[sd.default.device[1]]['name'] != self.currentOutputDevice:
+                self.currentOutputDevice = sd.query_devices(
                 )[sd.default.device[1]]['name']
             cc = str(ser.readline())
             self.changeVolume(volume, float(cc[2:][:-5])/1023.0)
 
     def checkCurrentDevice(self):
-        self.currentDevice = sd.query_devices()[sd.default.device[1]]['name']
+        self.currentOutputDevice = sd.query_devices()[
+            sd.default.device[1]]['name']
 
     def changeVolume(self, volume, decibles):
         volume.SetMasterVolumeLevelScalar(decibles, None)

@@ -1,4 +1,5 @@
-from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+from __future__ import print_function
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume, ISimpleAudioVolume
 import serial
 from ctypes import cast, POINTER, pointer
 from comtypes import CLSCTX_ALL, GUID
@@ -22,9 +23,17 @@ class volController(object):
             cc = str(ser.readline())[2:][:-5].split("|")
             button = int(cc[0])
             master_volume = float(cc[1])/1023.0
+            app1_volume = float(cc[2])/1023.0
             if button == 1:
                 self.refreshController()
             self.changeVolume(self.volume, float(master_volume))
+
+            sessions = AudioUtilities.GetAllSessions()
+            for session in sessions:
+                app1 = session._ctl.QueryInterface(ISimpleAudioVolume)
+                if (session.Process and session.Process.name() == "firefox.exe"):
+
+                    app1.SetMasterVolume(app1_volume, None)
 
     def refreshController(self):
         newDevices = AudioUtilities.GetSpeakers()
@@ -34,6 +43,9 @@ class volController(object):
 
     def changeVolume(self, volume, decibles):
         volume.SetMasterVolumeLevelScalar(decibles, None)
+
+    def setApp1Volume(self, volume):
+        self.app1.volume = volume
 
 
 def attemptPrint(s):

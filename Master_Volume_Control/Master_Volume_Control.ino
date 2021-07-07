@@ -1,4 +1,4 @@
-int serialValues[2];
+int serialValues[3];
 
 void setup()
 {
@@ -16,19 +16,19 @@ void loop()
 void updateValues()
 {
   serialValues[0] = digitalRead(2);
-
   serialValues[1] = analogRead(A0);
+  serialValues[2] = analogRead(A1);
 }
 
 void parseValues()
 {
   String builtString = String("");
 
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < 3; i++)
   {
     builtString += String((int)serialValues[i]);
 
-    if (i < 1)
+    if (i < 2)
     {
       builtString += String("|");
     }

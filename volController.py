@@ -24,16 +24,19 @@ class volController(object):
             button = int(cc[0])
             master_volume = float(cc[1])/1023.0
             app1_volume = float(cc[2])/1023.0
+            app2_volume = float(cc[3])/1023.0
             if button == 1:
                 self.refreshController()
             self.changeVolume(self.volume, float(master_volume))
 
             sessions = AudioUtilities.GetAllSessions()
             for session in sessions:
-                app1 = session._ctl.QueryInterface(ISimpleAudioVolume)
+                app = session._ctl.QueryInterface(ISimpleAudioVolume)
                 if (session.Process and session.Process.name() == "firefox.exe"):
-
-                    app1.SetMasterVolume(app1_volume, None)
+                    app.SetMasterVolume(app1_volume, None)
+                if session.Process and (session.Process.name() == "TEW2.exe" or session.Process.name() == "Spotify.exe" or
+                                        session.Process.name() == "ForzaHorizon4.exe" or session.Process.name() == "za4_dx12.exe"):
+                    app.SetMasterVolume(app2_volume, None)
 
     def refreshController(self):
         newDevices = AudioUtilities.GetSpeakers()

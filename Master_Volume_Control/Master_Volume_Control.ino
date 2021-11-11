@@ -1,9 +1,9 @@
-int serialValues[4];
+int serialValues[3];
 
 void setup()
 {
   Serial.begin(9600);
-  pinMode(2, INPUT);
+  //pinMode(2, INPUT);
 }
 
 void loop()
@@ -15,10 +15,12 @@ void loop()
 
 void updateValues()
 {
-  serialValues[0] = digitalRead(2);
-  serialValues[1] = analogRead(A0);
-  serialValues[2] = analogRead(A1);
-  serialValues[3] = analogRead(A2);
+  //serialValues[0] = digitalRead(2);
+  serialValues[0] = analogRead(A0);
+  serialValues[1] = analogRead(A1);
+  serialValues[2] = analogRead(A2);
+    serialValues[3] = analogRead(A3);
+
 }
 
 void parseValues()

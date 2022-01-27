@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['volController.py'],
-             pathex=['C:\\Users\\Aaron\\Desktop\\VolumeControl'],
+             pathex=[],
              binaries=[],
              datas=[],
              hiddenimports=[],

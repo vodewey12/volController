@@ -16,7 +16,7 @@
 ////////////////////
 // Hardware Setup //
 ////////////////////
-static const uint8_t btnRowPins[NUM_BTN_ROWS] = {2}; // Pins connected to switch rows (2)
+static const uint8_t btnRowPins[NUM_BTN_ROWS] = {2};                   // Pins connected to switch rows (2)
 static const uint8_t btnColPins[NUM_BTN_COLS] = {3, 4, 5, 6, 7, 8, 9}; // Pins connected to switch columns (1)
 
 //////////////////////
@@ -24,12 +24,12 @@ static const uint8_t btnColPins[NUM_BTN_COLS] = {3, 4, 5, 6, 7, 8, 9}; // Pins c
 //////////////////////
 static int8_t debounce_count[NUM_BTN_COLS][NUM_BTN_ROWS]; // One debounce counter per switch
 
-int serialValues[4];
+int serialValues[5];
 
 void setup()
 {
   Serial.begin(9600);
-  //pinMode(2, INPUT);
+  // pinMode(2, INPUT);
 
   setupSwitchPins();
 
@@ -52,12 +52,12 @@ void loop()
 
 void updateValues()
 {
-  //serialValues[0] = digitalRead(2);
+  // serialValues[0] = digitalRead(2);
   serialValues[0] = analogRead(A0);
   serialValues[1] = analogRead(A1);
   serialValues[2] = analogRead(A2);
   serialValues[3] = analogRead(A3);
-
+  serialValues[4] = analogRead(A4);
 }
 
 void parseValues()
@@ -66,38 +66,36 @@ void parseValues()
   static uint8_t currentRow = 0;
   uint8_t i, j; // for loop counters
   digitalWrite(btnRowPins[currentRow], LOW);
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 5; i++)
   {
     builtString += String((int)serialValues[i]);
-
-    if (i < 4)
+    if (i < 5)
     {
       builtString += String("|");
     }
   }
 
-  for ( j = 0; j < NUM_BTN_COLS; j++)
+  for (j = 0; j < NUM_BTN_COLS; j++)
   {
     // Read the button. If it's pressed, it should be LOW.
     if (digitalRead(btnColPins[j]) == LOW)
     {
-      if ( debounce_count[currentRow][j] < MAX_DEBOUNCE)
+      if (debounce_count[currentRow][j] < MAX_DEBOUNCE)
       { // Increment a debounce counter
         debounce_count[currentRow][j]++;
-        if ( debounce_count[currentRow][j] == MAX_DEBOUNCE )
+        if (debounce_count[currentRow][j] == MAX_DEBOUNCE)
         { // If debounce counter hits MAX_DEBOUNCE (default: 3)
           // Trigger key press -- Do anything here...
           builtString += "Key pressed " + String((currentRow * NUM_BTN_COLS) + j);
-
         }
       }
     }
     else // Otherwise, button is released
     {
-      if ( debounce_count[currentRow][j] > 0)
+      if (debounce_count[currentRow][j] > 0)
       {
         debounce_count[currentRow][j]--; // Decrement debounce counter
-        if ( debounce_count[currentRow][j] == 0 )
+        if (debounce_count[currentRow][j] == 0)
         { // If debounce counter hits 0
           // Trigger key release -- Do anything here...
           builtString += "Key released " + String((currentRow * NUM_BTN_COLS) + j);
@@ -118,12 +116,9 @@ static void scan()
   // Each run through the scan function operates on a single row
   // of the matrix, kept track of using the currentRow variable.
 
-
   // Select current row, and write all components on that row LOW.
   // That'll set the LED anode's LOW, and write the switch "2" pins LOW.
   // If diodes were added, "2' should be connected to the diode cathode
-
-
 
   // Scan through switches on this row:
 
